@@ -7,7 +7,7 @@ The idea is to learn a new technology, code something fun and share knowledge, o
 
 You may put as little or as much work into this as you'd like, it is encouraged to extend what you're making beyond the official challenge and to add capabilities.
 
-###Monthly Challenge of the JS room, November 2014. 
+###Monthly Challenge of the JS room, December 2014. 
 
 The elected idea is [the following](http://meta.stackoverflow.com/a/278143/1348195):
 **Go**
