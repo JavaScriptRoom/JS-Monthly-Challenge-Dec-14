@@ -31,5 +31,5 @@ Submission of entries is done through pull requests to this repository. Make a p
 
 ###How a winner will be chosen
 
-The winner is always Zirak. Sorry, that's just the way things our. <s>The Winner</s> Zirak [will be announced](http://chat.stackoverflow.com/transcript/message/8231986#8231986) after fair and democratic balot voting will be held after Jan 1st. 
+The winner is always Zirak. Sorry, that's just the way things are. <s>The Winner</s> Zirak [will be announced](http://chat.stackoverflow.com/transcript/message/8231986#8231986) after fair and democratic balot voting will be held after Jan 1st. 
 
