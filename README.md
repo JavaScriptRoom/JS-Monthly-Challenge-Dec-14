@@ -25,7 +25,7 @@ You are to use [Go](http://golang.org/) (tutorial included) in order to get info
 Submission of entries is done through pull requests to this repository. Make a pull request with a `yourusername` folder containing:
 
     yourUserName
-      - main.html  # runningthis should run your submission
+      - main.go  # running this should run your submission
       - ... # any additional files required to run your submission
 
 
