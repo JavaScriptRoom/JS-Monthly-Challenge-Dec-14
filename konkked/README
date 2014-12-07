@@ -1,0 +1,9 @@
+valid flags are 
+
+-room 
+	desc: room id to query
+	default: current room with the most amount of people
+
+-site the target site 
+	desc: the base site to target
+	default: stackoverflow
