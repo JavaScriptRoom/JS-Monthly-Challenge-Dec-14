@@ -2,71 +2,43 @@ package main
 
 import (
     "fmt"
-    "strconv"
-    "regexp"
-
-    "sort"
-
-    // used with some sorrow, because x/net/html is just not usable atm
-    "github.com/PuerkitoBio/goquery"
 )
 
-func ExtractHumanoidsFromUrl (url string, c chan *Humanoid) {
-    fmt.Println("Navigating to", url)
-    doc, err := goquery.NewDocument(url)
+func main() {
+    roomid := 17
+
+    fmt.Println("Fetching page count...")
+    pagesCount := CountStarPages(roomid)
+    fmt.Println("Count:", pagesCount)
+
+    humans := make(map[uint]*Humanoid)
+    // Make sure we only make 4 requests at the same time, so we won't spam SO
+    sem := make(Semaphore, 4)
+
+    for p := 0; p < pagesCount; p += 1 {
+        sem.Acquire()
+
+        url := FormatStarUrl(roomid, p)
+        go CollectHumanoids(sem, url, humans)
+    }
+
+    fmt.Println("=====================")
     fmt.Println("Done!")
 
-    if err != nil {
-        fmt.Println("Oh noes, error!", err)
-        return
+    sortedHumanoids := SortHumanoids(humans)
+    for _, humanoid := range sortedHumanoids {
+        fmt.Println(humanoid)
     }
-
-    ExtractHumanoidsFromDoc(doc, c)
 }
 
-func ExtractHumanoidsFromDoc (doc *goquery.Document, c chan *Humanoid) {
-    fmt.Println("Extracting stars from document")
-    messages := doc.Find(".monologue")
-
-    for i := range messages.Nodes {
-        c <- ExtractHumanoidFromMessage(messages.Eq(i))
-    }
-
-    // XXX is this the correct place to close the channel?
-    close(c)
-}
-
-func ExtractHumanoidFromMessage (message *goquery.Selection) (*Humanoid) {
-    useridRegexp := regexp.MustCompile(`(\d+)`)
-
-    // XXX yeah...handle error
-    starCount, _ := strconv.ParseInt(message.Find(".times").Text(), 10, 64)
-    if starCount == 0 {
-        starCount = 1
-    }
-    // fmt.Println("Star count:", starCount)
-
-    userContainer := message.Find(".username a").Eq(0)
-    href, _ := userContainer.Attr("href")
-
-    username := userContainer.Text()
-    userid, _ := strconv.ParseInt(useridRegexp.FindString(href), 10, 64)
-
-    // fmt.Println("Username:", username)
-    // fmt.Println("Userid:", userid)
-
-    return &Humanoid {userid, username, starCount}
-}
-
-func main() {
+func CollectHumanoids (sem Semaphore, url string, humans map[uint]*Humanoid) {
     c := make(chan *Humanoid)
 
-    go ExtractHumanoidsFromUrl("http://chat.stackoverflow.com/rooms/info/17/javascript/?tab=stars", c)
-
-    humans := make(map[int64]*Humanoid)
+    fmt.Println("Collecting humanoids from", url)
+    go ExtractHumanoidsFromUrl(url, c)
 
     for humanoid := range c {
-        fmt.Println("Humanoid!", humanoid)
+        // fmt.Println("Humanoid!", humanoid)
 
         existingHumanoid, existed := humans[humanoid.id]
 
@@ -77,11 +49,6 @@ func main() {
         }
     }
 
-    fmt.Println("=====================")
-    fmt.Println("Done!")
-
-    sortedHumanoids := sortHumanoids(humans)
-    for _, humanoid := range sortedHumanoids {
-        fmt.Println(humanoid)
-    }
+    fmt.Println("Finished", url)
+    sem.Release()
 }
