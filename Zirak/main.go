@@ -2,16 +2,27 @@ package main
 
 import (
     "fmt"
+
+    "os"
+    "flag"
+
+    "strconv"
+
+    "github.com/olekukonko/tablewriter"
 )
 
 func main() {
-    roomid := 17
+    var roomid int
+    flag.IntVar(&roomid, "roomid", 17, "Room id to grab stars from")
+
+    flag.Parse()
 
     fmt.Println("Fetching page count...")
     pagesCount := CountStarPages(roomid)
     fmt.Println("Count:", pagesCount)
 
     humans := make(map[uint]*Humanoid)
+
     // Make sure we only make 4 requests at the same time, so we won't spam SO
     sem := make(Semaphore, 4)
 
@@ -26,15 +37,27 @@ func main() {
     fmt.Println("Done!")
 
     sortedHumanoids := SortHumanoids(humans)
+    table := tablewriter.NewWriter(os.Stdout)
+
+    table.SetHeader([]string{"uid", "Name", "Star count"})
+    table.SetAlignment(tablewriter.ALIGN_LEFT)
+
     for _, humanoid := range sortedHumanoids {
-        fmt.Println(humanoid)
+        // fmt.Println(humanoid)
+        table.Append([]string{
+            strconv.FormatUint(uint64(humanoid.id), 10),
+            humanoid.name,
+            strconv.FormatUint(uint64(humanoid.starCount), 10),
+        })
     }
+
+    table.Render()
 }
 
 func CollectHumanoids (sem Semaphore, url string, humans map[uint]*Humanoid) {
     c := make(chan *Humanoid)
 
-    fmt.Println("Collecting humanoids from", url)
+    fmt.Fprintln(os.Stderr, "Collecting humanoids from", url)
     go ExtractHumanoidsFromUrl(url, c)
 
     for humanoid := range c {
@@ -49,6 +72,6 @@ func CollectHumanoids (sem Semaphore, url string, humans map[uint]*Humanoid) {
         }
     }
 
-    fmt.Println("Finished", url)
+    fmt.Fprintln(os.Stderr, "Finished", url)
     sem.Release()
 }

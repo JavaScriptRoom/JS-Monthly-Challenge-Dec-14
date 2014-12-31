@@ -2,10 +2,16 @@
 
 EH YEAH EH YEAH EH YEAH EH YEAH
 
+```sh
+# Dependencies
+$ go get github.com/olekukonko/tablewriter
+$ go get github.com/PuerkitoBio/goquery
+```
+
 NOW THERE WE GO THERE WE GO THERE WE GO THERE WE GO
 
 ```sh
-$ go run *.go
+$ go run *.go > result.table
 ```
 
 ![http://thecriticalpath.info/wp-content/uploads/2010/05/peanut-butter-jelly.png](http://thecriticalpath.info/wp-content/uploads/2010/05/peanut-butter-jelly.png)
@@ -17,3 +23,5 @@ PEANUT BUTTER JE-LLY
 PEANUT BUTTER JE-LLY
 
 PEANUT BUTTER JE-LLY
+
+http://gifrific.com/wp-content/uploads/2012/07/Peanut-Butter-and-Jelly-Time-Family-Guy.gif
